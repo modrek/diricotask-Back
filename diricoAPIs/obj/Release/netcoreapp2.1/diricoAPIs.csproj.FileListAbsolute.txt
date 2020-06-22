@@ -1,0 +1,14 @@
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\diricoAPIs.deps.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\diricoAPIs.runtimeconfig.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\diricoAPIs.runtimeconfig.dev.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\diricoAPIs.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\diricoAPIs.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.csprojAssemblyReference.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.csproj.CoreCompileInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.RazorAssemblyInfo.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.RazorAssemblyInfo.cs
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.AssemblyInfoInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.AssemblyInfo.cs
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.RazorTargetAssemblyInfo.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.pdb

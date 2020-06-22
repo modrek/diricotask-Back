@@ -1,0 +1,15 @@
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\NUnit3.TestAdapter.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\NUnit3.TestAdapter.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\nunit.engine.netstandard.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\Mono.Cecil.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\diricoTest.deps.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\diricoTest.runtimeconfig.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\diricoTest.runtimeconfig.dev.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\diricoTest.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\diricoTest.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.csprojAssemblyReference.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.csproj.CoreCompileInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.AssemblyInfoInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.AssemblyInfo.cs
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.pdb
