@@ -21,8 +21,8 @@ namespace diricoAPIs.Services
 
         List<ImageInfo> GetImageRequired();
         List<VideoInfo> GetVideoRequired();
-        //string GetImageFolders();
-        //string GetVideoFolders();
+        string GetBaseImageFolders();
+        string GetBaseVideoFolders();
     }
 
     #endregion Interface
@@ -35,8 +35,8 @@ namespace diricoAPIs.Services
        // private readonly IConfiguration _configuration;
         private List<ImageInfo> _imageRequiredScaled = new List<ImageInfo>();
         private List<VideoInfo> _videoRequiredScaled = new List<VideoInfo>();
-        private string ImageBaseFolders = "Facebook/Images";
-        private string VideoBaseFolders = "Facebook/Videos";
+        private string _imageBaseFolders = "Facebook/Images";
+        private string _videoBaseFolders = "Facebook/Videos";
 
 
         public FaceBook(IVideoConverter VideoConverter, IImageConverter ImageConverter)//,IConfiguration configuration)
@@ -92,7 +92,7 @@ namespace diricoAPIs.Services
             return videos;
         }
 
-        public string GetImagesFolders()
+        public string GetBaseImagesFolders()
         {
             //var folderstructure= _configuration.GetValue<string>("FolderStructure");
             //if (string.IsNullOrWhiteSpace(folderstructure))
@@ -117,14 +117,14 @@ namespace diricoAPIs.Services
             return _videoRequiredScaled;
         }
 
-        public string GetImageFolders()
+        public string GetBaseImageFolders()
         {
-            throw new NotImplementedException();
+            return _imageBaseFolders;
         }
 
-        public string GetVideoFolders()
+        public string GetBaseVideoFolders()
         {
-            throw new NotImplementedException();
+            return _videoBaseFolders;
         }
     }
 

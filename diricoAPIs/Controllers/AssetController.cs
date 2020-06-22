@@ -228,15 +228,16 @@ namespace diricoAPIs.Controllers
 
                 foreach (var item in imageConverteds)
                 {
-                    creatFolders(item.FoldersName.Split('/').ToList());
+                    string fullfplderpath = (faceBook.GetBaseImageFolders() + "/" + item.GetFolder);
+                    creatFolders(fullfplderpath.Split('/').ToList());
 
                     var bytes = Convert.FromBase64String(item.ImageBase64);
                     var stream = new MemoryStream(bytes);
 
                     string socialfilename = Helper.GetRandomBlobName(req.Files[0].FileName, item.Extention.ToString());
-                    string socialfilepath = await _azureBlobService.UploadStreamAcync(stream, socialfilename, item.FoldersName);
+                    string socialfilepath = await _azureBlobService.UploadStreamAcync(stream, socialfilename, fullfplderpath);
 
-                    var parentsocial = _assetRepository.GetEntityByPath("/" + item.FoldersName);
+                    var parentsocial = _assetRepository.GetEntityByPath("/" + fullfplderpath);
                     _assetRepository.Add(new AssetModel
                     {
                         AssetId = new Guid(),

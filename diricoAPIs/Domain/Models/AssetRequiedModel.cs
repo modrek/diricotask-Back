@@ -19,8 +19,8 @@ namespace diricoAPIs.Domain.Models
         {
             get
             {
-                
-                return FoldersName;
+                return $"{ Extention}/{Width}*{Height}";
+                //return  FoldersName;
             }
         }
     }
