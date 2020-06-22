@@ -2,14 +2,14 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace ImageLibrary
 {
     public static class ImageServices
     {
-        public static Image ResizeImage(Image img, int maxWidth, int maxHeight)
-        {
-            if (img.Height < maxHeight && img.Width < maxWidth) return img;
+        public static Image ResizeImage(Image img, int maxWidth, int maxHeight,ImageFormat ext)
+        {            
             using (img)
             {
                 Double xRatio = (double)img.Width / maxWidth;
@@ -30,7 +30,20 @@ namespace ImageLibrary
                         new Rectangle(0, 0, img.Width, img.Height),
                         GraphicsUnit.Pixel);
                 }
-                return cpy;
+                //return cpy;
+
+                using (MemoryStream m = new MemoryStream())
+                {
+                    cpy.Save(m, ext);
+                    byte[] imageBytes = m.ToArray();
+
+                    using (var streamimage = new MemoryStream(imageBytes))
+                    {
+                        Image newimg = System.Drawing.Image.FromStream(streamimage);
+        //                newimg.Save(@"D:\1.jpg", ext);
+                        return newimg;
+                    }
+                }
             }
 
         }

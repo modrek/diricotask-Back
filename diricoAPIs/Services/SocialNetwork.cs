@@ -1,10 +1,13 @@
 ﻿
 using diricoAPIs.Domain.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace diricoAPIs.Services
@@ -15,6 +18,11 @@ namespace diricoAPIs.Services
     {
         Task<List<ImageScaled>> CreateImagesAsync(string remoteUrl);
         Task<List<VideoScaled>> CreateVideosAsync(string remoteUrl);
+
+        List<ImageInfo> GetImageRequired();
+        List<VideoInfo> GetVideoRequired();
+        //string GetImageFolders();
+        //string GetVideoFolders();
     }
 
     #endregion Interface
@@ -22,22 +30,25 @@ namespace diricoAPIs.Services
     #region concrete class
     public class FaceBook :ISocialNetwork
     {
-        private readonly IVideoConverter _azureVideoConverter;
-        private readonly IImageConverter _azureImageConverter;
-        private List<ImageInfo> imageRequiredScaled = new List<ImageInfo>();
-        private List<VideoInfo> videoRequiredScaled = new List<VideoInfo>();
-        
+        private readonly IVideoConverter _VideoConverter;
+        private readonly IImageConverter _ImageConverter;
+       // private readonly IConfiguration _configuration;
+        private List<ImageInfo> _imageRequiredScaled = new List<ImageInfo>();
+        private List<VideoInfo> _videoRequiredScaled = new List<VideoInfo>();
+        private string ImageBaseFolders = "Facebook/Images";
+        private string VideoBaseFolders = "Facebook/Videos";
 
-        public FaceBook(IVideoConverter azureVideoConverter, IImageConverter azureImageConverter)
+
+        public FaceBook(IVideoConverter VideoConverter, IImageConverter ImageConverter)//,IConfiguration configuration)
         {
-            _azureVideoConverter = azureVideoConverter;
-            _azureImageConverter = azureImageConverter;
-            /////
+            _VideoConverter = VideoConverter;
+            _ImageConverter = ImageConverter;
+           // _configuration = configuration;
+           // /////
             //// we can get this data from API or Database
-            imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Bmp, Width = 100, Height = 200 });
-            imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Gif, Width = 100, Height = 200 });
-            imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Jpeg, Width = 64, Height = 64});
-          
+            _imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Png, Width = 64, Height = 64,FoldersName="Small/Thumbnail"});
+            _imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Png, Width = 256, Height = 256 , FoldersName = "Medium/Personal/Folder 1" });
+
             //    {
             //        new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q320 },
             //    new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.QFullHD },
@@ -48,14 +59,21 @@ namespace diricoAPIs.Services
         public async Task<List<ImageScaled>> CreateImagesAsync(string remoteUrl)
         {
             List<ImageScaled> Images = new List<ImageScaled>();
-            foreach (var img in imageRequiredScaled)
+            foreach (var img in _imageRequiredScaled)
+            {
+
+                string newimage = await _ImageConverter.ConvertAsync(remoteUrl, img.Width, img.Height, img.Extention);
                 Images.Add(new ImageScaled
                 {
-                    Extention=img.Extention,
-                    Width=img.Width,
-                    Height=img.Height,
-                    imageString= await _azureImageConverter.ConvertAsync(remoteUrl,img.Width,img.Height,img.Extention)
+                    Extention = img.Extention,
+                    Width = img.Width,
+                    Height = img.Height,
+                    ImageBase64 = newimage,
+                    FoldersName=img.FoldersName
                 });
+                
+                
+            }
 
             return Images;
         }
@@ -68,45 +86,49 @@ namespace diricoAPIs.Services
                 {
                     Extention = vd.Extention,
                     Quality = vd.Quality,                    
-                    stream =await _azureVideoConverter.ConvertAsync(remoteUrl,vd.Quality,vd.Extention)
+                    stream =await _VideoConverter.ConvertAsync(remoteUrl,vd.Quality,vd.Extention)
                 });
 
             return videos;
         }
-    }
 
-    public class Twitter : ISocialNetwork
-    {
-        private readonly IVideoConverter _azureVideoConverter;
-        private readonly IImageConverter _azureImageConverter;
-        private List<ImageInfo> imageRequiredScaled = new List<ImageInfo>();
-        private List<VideoInfo> videoRequiredScaled = new List<VideoInfo>();
-        public Twitter(IVideoConverter azureVideoConverter, IImageConverter azureImageConverter)
+        public string GetImagesFolders()
         {
+            //var folderstructure= _configuration.GetValue<string>("FolderStructure");
+            //if (string.IsNullOrWhiteSpace(folderstructure))
+            //{
+            //    throw new ArgumentException("Configuration must contain FolderStructure");
+            //}
 
-            _azureVideoConverter = azureVideoConverter;
-            _azureImageConverter = azureImageConverter;
-            //requiredScaled.AddRange({
-            //    new ImageInfo { Extention = ImageFormat.jpg, Width = 100, Height = 200 },
-            //    new ImageInfo { Extention = ImageFormat.png, Width = 100, Height = 200 },
-            //    new ImageInfo { Extention = ImageFormat.bmp, Width = 256, Height = 256 }}
-            //   );
-            //    {
-            //        new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q320 },
-            //    new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.QFullHD },
-            //    new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q4K },
-            //};
-        }
-        public Task<List<ImageScaled>> CreateImagesAsync(string remoteUrl)
-        {
-            return null;
+            //if (folderstructure == "Field")
+            //    return ImageBaseFolders;
+            //else
+            //    return "";
+            return "";
         }
 
-        public Task<List<VideoScaled>> CreateVideosAsync(string remoteUrl)
+        public List<ImageInfo> GetImageRequired()
+        {
+            return _imageRequiredScaled;
+        }
+
+        public List<VideoInfo> GetVideoRequired()
+        {
+            return _videoRequiredScaled;
+        }
+
+        public string GetImageFolders()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetVideoFolders()
         {
             throw new NotImplementedException();
         }
     }
+
+   
 
     #endregion concrete class
 }

@@ -13,3 +13,6 @@ C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\di
 C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.AssemblyInfo.cs
 C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.dll
 C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\ImageLibrary.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\bin\Debug\netcoreapp2.1\ImageLibrary.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoTest\obj\Debug\netcoreapp2.1\diricoTest.csproj.CopyComplete

@@ -1,0 +1,9 @@
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\bin\Debug\netcoreapp2.1\VideoLibrary.deps.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\bin\Debug\netcoreapp2.1\VideoLibrary.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\bin\Debug\netcoreapp2.1\VideoLibrary.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\obj\Debug\netcoreapp2.1\VideoLibrary.csprojAssemblyReference.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\obj\Debug\netcoreapp2.1\VideoLibrary.csproj.CoreCompileInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\obj\Debug\netcoreapp2.1\VideoLibrary.AssemblyInfoInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\obj\Debug\netcoreapp2.1\VideoLibrary.AssemblyInfo.cs
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\obj\Debug\netcoreapp2.1\VideoLibrary.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\VideoLibrary\obj\Debug\netcoreapp2.1\VideoLibrary.pdb

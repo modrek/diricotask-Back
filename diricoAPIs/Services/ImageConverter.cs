@@ -39,32 +39,33 @@ namespace diricoAPIs.Services
             // Request headers
             var subscriptionKey = _configuration.GetValue<string>("SubscriptionKey");
             var GenerateThumbnailEndPoint = _configuration.GetValue<string>("GenerateThumbnailEndPoint");
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key",  subscriptionKey );
-           
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
+
 
             // Request parameters
             queryString["width"] = $"{width}";
             queryString["height"] = $"{height}";
             queryString["smartCropping"] = "true";
             var uri = GenerateThumbnailEndPoint + queryString;
-       
+
             HttpResponseMessage response;
 
             // Request body
-            byte[] byteData = Encoding.UTF8.GetBytes(@"{'url':'"+ remoteUrl + "'}");
+            byte[] byteData = Encoding.UTF8.GetBytes(@"{'url':'" + remoteUrl + "'}");
             try
             {
-               
+
                 using (var content = new ByteArrayContent(byteData))
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                     response = await client.PostAsync(uri, content);
-                   
+
                     if (response.IsSuccessStatusCode)
                     {
-                        var responseContent = await response.Content.ReadAsByteArrayAsync();
-                        return bytesToSrcString(responseContent);
-                                               
+                        var responseContent = await response.Content.ReadAsByteArrayAsync();                        
+                        //Image newimage= Helper.ByteToImage(responseContent);                        
+                        return Convert.ToBase64String(responseContent);
+
                     }
                 }
 
@@ -87,19 +88,12 @@ namespace diricoAPIs.Services
         {
             try
             {
+                Image image = Helper.GetImageFromURL(remoteUrl);
 
-                Image image = GetImageFromURL(remoteUrl);
-                Image newimg = ImageLibrary.ImageServices.ResizeImage(image, width, height);
+                Image newimage= ImageLibrary.ImageServices.ResizeImage(image, width, height, extention);
 
-                using (MemoryStream m = new MemoryStream())
-                {
-                    newimg.Save(m, extention);
-                    byte[] imageBytes = m.ToArray();
+                return "";// newimage;
 
-                    string base64String = Convert.ToBase64String(imageBytes);
-                    
-                    return base64String;
-                }
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -131,12 +132,9 @@ namespace diricoAPIs.Controllers
         {
             try
             {
-             
-
                 var req = await HttpContext.Request.ReadFormAsync();
                 if (req.Files == null)
                     return null;
-
 
                 // Analyze Image
                 ImageAnalysis metadatalist = new ImageAnalysis();
@@ -146,16 +144,16 @@ namespace diricoAPIs.Controllers
                 }
 
                 // create folders base on data that Analyzed  
-                var categories = metadatalist.Categories.Select(x => x.Name).ToList();
-                creatFolders(categories);
+                //var categories = metadatalist.Categories.Select(x => x.Name).ToList();
+                creatFolders(new List<string> { "Original" });
 
-                // upload file in storage
-                string filename = Helper.GetRandomBlobName(req.Files[0].FileName);
-                string filepath = await _azureBlobService.UploadAcync(req.Files, filename, string.Join("/", categories));
+                // upload original file in storage
+                string filename = Helper.GetRandomBlobName(req.Files[0].FileName , Path.GetExtension(req.Files[0].FileName));
+                string filepath = await _azureBlobService.UploadAcync(req.Files, filename, "Original");
 
 
-                // add in database
-                var parent = _assetRepository.GetEntityByPath("/" + string.Join("/", categories));
+                // add Original asset in database
+                var parent = _assetRepository.GetEntityByPath("/Original");
                 _assetRepository.Add(new AssetModel
                 {
                     AssetId = new Guid(),
@@ -224,39 +222,34 @@ namespace diricoAPIs.Controllers
 
 
                 List<ImageScaled> imageConverteds = new List<ImageScaled>();
-                ModrekImageConverter modrekImageConverter = new ModrekImageConverter();
-                FaceBook faceBook = new FaceBook(null, modrekImageConverter);
-
+                                
+                FaceBook faceBook = new FaceBook(null, _azureImageConverter);
                 imageConverteds = await faceBook.CreateImagesAsync(filepath);
 
-                creatFolders(new List<string> { "facebook" });
                 foreach (var item in imageConverteds)
                 {
-                    byte[] byteArray = Encoding.UTF8.GetBytes(item.imageString);
-                    using (var streamimage = new MemoryStream(byteArray))
+                    creatFolders(item.FoldersName.Split('/').ToList());
+
+                    var bytes = Convert.FromBase64String(item.ImageBase64);
+                    var stream = new MemoryStream(bytes);
+
+                    string socialfilename = Helper.GetRandomBlobName(req.Files[0].FileName, item.Extention.ToString());
+                    string socialfilepath = await _azureBlobService.UploadStreamAcync(stream, socialfilename, item.FoldersName);
+
+                    var parentsocial = _assetRepository.GetEntityByPath("/" + item.FoldersName);
+                    _assetRepository.Add(new AssetModel
                     {
-                        string socialfilename = Helper.GetRandomBlobName(req.Files[0].FileName);
-                        string socialfilepath = await _azureBlobService.UploadStreamAcync(streamimage, socialfilename, "facebook");
-
-                        // add in database
-                        var parentsocial = _assetRepository.GetEntityByPath("/" + "facebook");
-                        _assetRepository.Add(new AssetModel
-                        {
-                            AssetId = new Guid(),
-                            AssetFileName = socialfilename,
-                            AssetFilePath = socialfilepath,
-                            Datetime = DateTime.Now,
-                            AssetType = AssetTypes.Image,
-                            MetaData = JsonConvert.SerializeObject(metadatalist).ToString(),
-                            Parent = parentsocial != null ? parentsocial.AssetId : Guid.Empty
-                        });
-                        _assetRepository.Complete();
-                    }
-                }
-
-
-
-                return "Hey, it's OK!";
+                        AssetId = new Guid(),
+                        AssetFileName = socialfilename,
+                        AssetFilePath = socialfilepath,
+                        Datetime = DateTime.Now,
+                        AssetType = AssetTypes.Image,
+                        MetaData = JsonConvert.SerializeObject(metadatalist).ToString(),
+                        Parent = parentsocial != null ? parentsocial.AssetId : Guid.Empty
+                    });
+                    _assetRepository.Complete();
+                }      
+                return "Asset uploded successfully.";
             }
             catch (Exception e)
             {
