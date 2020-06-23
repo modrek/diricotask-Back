@@ -12,3 +12,6 @@ C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\
 C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.RazorTargetAssemblyInfo.cache
 C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.dll
 C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\ImageLibrary.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\bin\Release\netcoreapp2.1\ImageLibrary.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\diricoAPIs\obj\Release\netcoreapp2.1\diricoAPIs.csproj.CopyComplete

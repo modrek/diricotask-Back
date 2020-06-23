@@ -43,31 +43,7 @@ namespace diricoAPIs.Controllers
             _assetRepository = assetRepository;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> UploadAsync()
-        {
-            try
-            {
-
-                var request = await HttpContext.Request.ReadFormAsync();
-                if (request.Files == null)
-                    return BadRequest("Could not uplaod files.");
-
-                var files = request.Files;
-                if (files.Count == 0)
-                    return BadRequest("Could not uplaod empty file.");
-
-
-                await _azureBlobService.UploadAcync(files, files[0].FileName, "");
-
-                return Ok("Asset uploaded successfully.");
-            }
-            catch (Exception ex)
-            {                
-                return BadRequest("Unexpected Error ."+ex.Message);
-            }
-        }
-
+        
         [HttpDelete]
         public async Task<ActionResult> DeleteAsset(Guid AssetID)
         {
@@ -126,30 +102,33 @@ namespace diricoAPIs.Controllers
             return _assetRepository.GetAssetMetadata(request);
         }
 
-
+        
         [HttpPost]
-        public async Task<string> TestAsync()
-        {
+        public async Task<string> UploadAsync(AssetTypes assetType)
+        {            
             try
             {
-                var req = await HttpContext.Request.ReadFormAsync();
-                if (req.Files == null)
-                    return null;
+                var request = await HttpContext.Request.ReadFormAsync();
+                if (request.Files == null)
+                    return "Could not uplaod file.";
+
+                var files = request.Files;
+                if (files.Count != 1)
+                  return   "Could uplaod just only one file.";
+                
 
                 // Analyze Image
                 ImageAnalysis metadatalist = new ImageAnalysis();
-                using (var streamimage = req.Files[0].OpenReadStream())
+                using (var streamimage = files[0].OpenReadStream())
                 {
                     metadatalist = await _azureImageAnalyzer.AnalyzImageAsync(streamimage);
                 }
 
-                // create folders base on data that Analyzed  
-                //var categories = metadatalist.Categories.Select(x => x.Name).ToList();
-                creatFolders(new List<string> { "Original" });
 
-                // upload original file in storage
-                string filename = Helper.GetRandomBlobName(req.Files[0].FileName , Path.GetExtension(req.Files[0].FileName));
-                string filepath = await _azureBlobService.UploadAcync(req.Files, filename, "Original");
+                // create folder and upload original file in storage
+                creatFolders(new List<string> { "Original" });
+                string filename = Helper.GetRandomBlobName(files[0].FileName , Path.GetExtension(files[0].FileName));
+                string filepath = await _azureBlobService.UploadAcync(files, filename, "Original");
 
 
                 // add Original asset in database
@@ -166,8 +145,23 @@ namespace diricoAPIs.Controllers
                 });
                 _assetRepository.Complete();
 
+                // craete and upload SocialRequirement
+                await uploadSocialRequirementsAsync(files[0], filepath , metadatalist);
 
-                // Social Network
+
+                return "Asset uploded successfully.";
+            }
+            catch (Exception e)
+            {
+                return "Could not uplaod file.\nError message:"+ e.Message;
+            }
+        }
+
+        private async Task uploadSocialRequirementsAsync(IFormFile file, string filepath, ImageAnalysis metadatalist)
+        {
+            try
+            {
+
                 #region reflection call all social netwrok requiured
                 //var type = typeof(ISocialNetwork);
                 //var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -222,7 +216,7 @@ namespace diricoAPIs.Controllers
 
 
                 List<ImageScaled> imageConverteds = new List<ImageScaled>();
-                                
+
                 FaceBook faceBook = new FaceBook(null, _azureImageConverter);
                 imageConverteds = await faceBook.CreateImagesAsync(filepath);
 
@@ -234,7 +228,7 @@ namespace diricoAPIs.Controllers
                     var bytes = Convert.FromBase64String(item.ImageBase64);
                     var stream = new MemoryStream(bytes);
 
-                    string socialfilename = Helper.GetRandomBlobName(req.Files[0].FileName, item.Extention.ToString());
+                    string socialfilename = Helper.GetRandomBlobName(file.FileName, item.Extention.ToString());
                     string socialfilepath = await _azureBlobService.UploadStreamAcync(stream, socialfilename, fullfplderpath);
 
                     var parentsocial = _assetRepository.GetEntityByPath("/" + fullfplderpath);
@@ -249,40 +243,48 @@ namespace diricoAPIs.Controllers
                         Parent = parentsocial != null ? parentsocial.AssetId : Guid.Empty
                     });
                     _assetRepository.Complete();
-                }      
-                return "Asset uploded successfully.";
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return e.Message;
+
+                throw new Exception ("Error on create and uploading social requerments.\nError message : "+ex.Message);
             }
         }
 
         private  void creatFolders(List<string> folders)
         {
-            string path = "";
-
-            foreach (var cat in folders)
+            try
             {
-                var parentrecord = _assetRepository.GetEntityByPath(path);
+                string path = "";
 
-                path = path + "/" + cat;
-                var existingFolder = _assetRepository.GetEntityByPath(path);
-
-                if (existingFolder == null)
+                foreach (var cat in folders)
                 {
-                    _assetRepository.Add(new AssetModel
+                    var parentrecord = _assetRepository.GetEntityByPath(path);
+
+                    path = path + "/" + cat;
+                    var existingFolder = _assetRepository.GetEntityByPath(path);
+
+                    if (existingFolder == null)
                     {
-                        AssetId = new Guid(),
-                        AssetFileName = cat,
-                        AssetFilePath = path,
-                        Datetime = DateTime.Now,
-                        AssetType = AssetTypes.Folder,
-                        MetaData = "",
-                        Parent = parentrecord != null ? parentrecord.AssetId : Guid.Empty
-                    });
-                    _assetRepository.Complete();
+                        _assetRepository.Add(new AssetModel
+                        {
+                            AssetId = new Guid(),
+                            AssetFileName = cat,
+                            AssetFilePath = path,
+                            Datetime = DateTime.Now,
+                            AssetType = AssetTypes.Folder,
+                            MetaData = "",
+                            Parent = parentrecord != null ? parentrecord.AssetId : Guid.Empty
+                        });
+                        _assetRepository.Complete();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Could not create folder structure in databsae.\nError message:"+ex.Message);
             }
 
         }
