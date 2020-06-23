@@ -9,11 +9,11 @@ namespace diricoAPIs.Domain.Repositories
     public interface IAssetRepository : IRepository<AssetModel>
     {
 
-        List<FolderResponse> GetFolders(FolderRequest request);
+        List<FolderResponse> GetFolders(Guid? CurrentLevelKey);
 
-        List<FolderContentResponse> GetFolderContents(FolderContentRequest request);
+        List<FolderContentResponse> GetFolderContents(Guid FolderId);
 
-        MetadataResponse GetAssetMetadata(MetadataRequest request);
+        MetadataResponse GetAssetMetadata(Guid AssetId);
 
         AssetModel GetEntityByPath(string path);
     }

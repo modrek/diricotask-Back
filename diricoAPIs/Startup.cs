@@ -36,25 +36,25 @@ namespace diricoAPIs
 
             services.AddSingleton<IBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<IImageAnalyzer, AzureImageAnalyzer>();
-            services.AddScoped<IBlobService, AzureBlobService>();            
-           // services.AddScoped<ISocialNetwork, FaceBook>();
+            services.AddScoped<IBlobService, AzureBlobService>();                       
             services.AddScoped<IVideoConverter, AzureVideoConverter>();
             services.AddScoped<IImageConverter, AzureImageConverter>();
             services.AddScoped<IAssetRepository, AssetRepository>();
 
-           
+            // Allow All region in CORS
+            services.AddCors(o => o.AddPolicy("AllowOrigin", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "dirico Task", Version = "v0.01" });
+                c.SwaggerDoc("v1", new Info { Title = "dirico Task", Version = "v1" });
             });
-            //services.AddLogging();
-            //// Add our repository type
-            //services.AddSingleton<ITodoRepository, TodoRepository>();
-            //// Inject an implementation of ISwaggerProvider with defaulted settings applied
-            //services.AddSwaggerGen();
-
+           
             services.AddApiVersioning(options =>
             {
                 options.ApiVersionReader = new QueryStringApiVersionReader();
@@ -74,10 +74,10 @@ namespace diricoAPIs
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "dirico Task V0.01");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "dirico Task V1");
             });
-           
 
+            app.UseCors();
             app.UseMvc();
         }
     }

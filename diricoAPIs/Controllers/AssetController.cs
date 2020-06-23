@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using diricoAPIs.Domain.Models;
 using diricoAPIs.Domain.Repositories;
 using diricoAPIs.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
@@ -20,30 +21,33 @@ using Newtonsoft.Json;
 namespace diricoAPIs.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]/[action]")]
-    [ApiVersion("0.01")]
+    [ApiVersion("1")]
     [ApiController]
     public class AssetController : Controller
     {
         private readonly IBlobService _azureBlobService;
         private readonly IImageAnalyzer _azureImageAnalyzer;
-        private readonly IImageConverter _azureImageConverter;        
+        private readonly IImageConverter _azureImageConverter;
+        private readonly IVideoConverter _azureVideoConverter;
         private readonly IAssetRepository _assetRepository;
 
         public AssetController(
             IBlobService azureBlobService,
             IImageAnalyzer azureImageAnalyzer,
             IImageConverter azureImageConverter,
+            IVideoConverter azureVideoConverter,
             IAssetRepository assetRepository
             )
         {
 
             _azureBlobService = azureBlobService;
             _azureImageAnalyzer = azureImageAnalyzer;
-            _azureImageConverter = azureImageConverter;            
+            _azureImageConverter = azureImageConverter;
+            _azureVideoConverter = azureVideoConverter;
             _assetRepository = assetRepository;
         }
 
-        
+        [EnableCors]
         [HttpDelete]
         public async Task<ActionResult> DeleteAsset(Guid AssetID)
         {
@@ -63,6 +67,7 @@ namespace diricoAPIs.Controllers
             }
         }
 
+        [EnableCors]
         [HttpDelete]
         public async Task<ActionResult> DeleteAllAssets()
         {
@@ -79,30 +84,34 @@ namespace diricoAPIs.Controllers
                 return BadRequest("Unexpected Error ." + ex.Message);
             }
         }
-           
 
+
+        [EnableCors]
         [HttpGet]
-        public List<FolderResponse> GetFolders(FolderRequest request)
+        public List<FolderResponse> GetFolders(Guid? CurrentLevelKey)
         {
-            return _assetRepository.GetFolders(request);
+            return _assetRepository.GetFolders(CurrentLevelKey);
         }
 
+        [EnableCors]
         [HttpGet]
-        public List<FolderContentResponse> GetFolderContents(FolderContentRequest request)
+        public List<FolderContentResponse> GetFolderContents(Guid FolderId)
         {
 
-            return _assetRepository.GetFolderContents(request);
+            return _assetRepository.GetFolderContents(FolderId);
         }
 
 
+        [EnableCors]
         [HttpGet]
-        public MetadataResponse GetAssetMetadata(MetadataRequest request)
+        public MetadataResponse GetAssetMetadata(Guid AssetId)
         {
 
-            return _assetRepository.GetAssetMetadata(request);
+            return _assetRepository.GetAssetMetadata(AssetId);
         }
 
-        
+
+        [EnableCors]
         [HttpPost]
         public async Task<string> UploadAsync(AssetTypes assetType)
         {            
@@ -146,7 +155,7 @@ namespace diricoAPIs.Controllers
                 _assetRepository.Complete();
 
                 // craete and upload SocialRequirement
-                await uploadSocialRequirementsAsync(files[0], filepath , metadatalist);
+                await uploadSocialRequirementsAsync(assetType ,files[0], filepath , metadatalist);
 
 
                 return "Asset uploded successfully.";
@@ -157,93 +166,79 @@ namespace diricoAPIs.Controllers
             }
         }
 
-        private async Task uploadSocialRequirementsAsync(IFormFile file, string filepath, ImageAnalysis metadatalist)
+        private async Task uploadSocialRequirementsAsync(AssetTypes assetType,IFormFile file, string filepath, ImageAnalysis metadatalist)
         {
             try
             {
+                string CreateAssetMethodName = "";
+                string GetBaseAssetFoldersMethodName = "";
+                switch (assetType)
+                {
+                    case AssetTypes.Folder:
+                        return;
+                    case AssetTypes.Image:
+                        CreateAssetMethodName = "CreateImagesAsync";
+                        GetBaseAssetFoldersMethodName = "GetBaseImageFolders";
+                        break;
+                    case AssetTypes.Video:
+                        CreateAssetMethodName = "CreateVideosAsync";
+                        GetBaseAssetFoldersMethodName = "GetBaseVideoFolders";
+                        break;
+                    default:
+                        break;
+                }
+                
 
                 #region reflection call all social netwrok requiured
-                //var type = typeof(ISocialNetwork);
-                //var types = AppDomain.CurrentDomain.GetAssemblies()
-                //    .SelectMany(s => s.GetTypes())
-                //    .Where(p => type.IsAssignableFrom(p) )
-                //    .Select(x =>new { x.FullName , x.Name}).Where(x=>x.Name !="ISocialNetwork").ToList();
+                var type = typeof(ISocialNetwork);
+                var types = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(s => s.GetTypes())
+                    .Where(p => type.IsAssignableFrom(p))
+                    .Select(x => new { x.FullName, x.Name }).Where(x => x.Name != "ISocialNetwork").ToList();
 
-                //foreach (var socialclass in types)
-                //{
-                //    Type typeName = Type.GetType(socialclass.FullName);
-                //    MethodInfo myMethod = typeName.GetMethod("CreateImagesAsync");
-                //    object socialclassinstance = Activator.CreateInstance(typeName,null, _azureImageConverter);
+                foreach (var socialclass in types)
+                {
+                    List<ImageScaled> imageConverteds = new List<ImageScaled>();
+
+                    Type typeName = Type.GetType(socialclass.FullName);
+                    MethodInfo CreateImagesAsyncMethod = typeName.GetMethod(CreateAssetMethodName);
+                    object socialclassinstance = Activator.CreateInstance(typeName, null, _azureImageConverter);
+                    dynamic task = CreateImagesAsyncMethod.Invoke(socialclassinstance, new object[] { filepath });
+                    await task;
+                    imageConverteds = (List<ImageScaled>)task.GetAwaiter().GetResult();
+
+                    foreach (var item in imageConverteds)
+                    {
+                        MethodInfo GetBaseImageFoldersMethos = typeName.GetMethod(GetBaseAssetFoldersMethodName);
+                        string fullfplderpath = (string)GetBaseImageFoldersMethos.Invoke(socialclassinstance, null) + "/" + item.GetFolder;                             
+                        creatFolders(fullfplderpath.Split('/').ToList());
+
+                        var bytes = Convert.FromBase64String(item.ImageBase64);
+                        var stream = new MemoryStream(bytes);
+
+                        string socialfilename = Helper.GetRandomBlobName(file.FileName, item.Extention.ToString());
+                        string socialfilepath = await _azureBlobService.UploadStreamAcync(stream, socialfilename, fullfplderpath);
+
+                        var parentsocial = _assetRepository.GetEntityByPath("/" + fullfplderpath);
+                        _assetRepository.Add(new AssetModel
+                        {
+                            AssetId = new Guid(),
+                            AssetFileName = socialfilename,
+                            AssetFilePath = socialfilepath,
+                            Datetime = DateTime.Now,
+                            AssetType = AssetTypes.Image,
+                            MetaData = JsonConvert.SerializeObject(metadatalist).ToString(),
+                            Parent = parentsocial != null ? parentsocial.AssetId : Guid.Empty
+                        });
+                        _assetRepository.Complete();
+                    }
 
 
-                //    List<ImageScaled> imageConverteds = new List<ImageScaled>();
-                //    creatFolders(new List<string> { socialclass.Name });
-                //    var task = (Task) myMethod.Invoke(socialclassinstance, new object[] { filepath });
 
-
-                //    await task.ConfigureAwait(false);
-
-                //    var resultProperty = task.GetType().GetProperty("Result");
-
-
-
-                //    foreach (var item in imageConverteds)
-                //    {
-                //        byte[] byteArray = Encoding.UTF8.GetBytes(item.imageString);
-                //        using (var streamimage = new MemoryStream(byteArray))
-                //        {
-                //            string socialfilename = Helper.GetRandomBlobName(req.Files[0].FileName);
-                //            string socialfilepath = await _azureBlobService.UploadStreamAcync(streamimage, socialfilename, socialclass.Name);
-
-                //            // add in database
-                //            var parentsocial = _assetRepository.GetEntityByPath("/" + socialclass.Name);
-                //            _assetRepository.Add(new AssetModel
-                //            {
-                //                AssetId = new Guid(),
-                //                AssetFileName = socialfilename,
-                //                AssetFilePath = socialfilepath,
-                //                Datetime = DateTime.Now,
-                //                AssetType = AssetTypes.Image,
-                //                MetaData = JsonConvert.SerializeObject(metadatalist).ToString(),
-                //                Parent = parentsocial != null ? parentsocial.AssetId : Guid.Empty
-                //            });
-                //            _assetRepository.Complete();
-                //        }
-                //    }
-                //}
+                }
 
                 #endregion
-
-
-                List<ImageScaled> imageConverteds = new List<ImageScaled>();
-
-                FaceBook faceBook = new FaceBook(null, _azureImageConverter);
-                imageConverteds = await faceBook.CreateImagesAsync(filepath);
-
-                foreach (var item in imageConverteds)
-                {
-                    string fullfplderpath = (faceBook.GetBaseImageFolders() + "/" + item.GetFolder);
-                    creatFolders(fullfplderpath.Split('/').ToList());
-
-                    var bytes = Convert.FromBase64String(item.ImageBase64);
-                    var stream = new MemoryStream(bytes);
-
-                    string socialfilename = Helper.GetRandomBlobName(file.FileName, item.Extention.ToString());
-                    string socialfilepath = await _azureBlobService.UploadStreamAcync(stream, socialfilename, fullfplderpath);
-
-                    var parentsocial = _assetRepository.GetEntityByPath("/" + fullfplderpath);
-                    _assetRepository.Add(new AssetModel
-                    {
-                        AssetId = new Guid(),
-                        AssetFileName = socialfilename,
-                        AssetFilePath = socialfilepath,
-                        Datetime = DateTime.Now,
-                        AssetType = AssetTypes.Image,
-                        MetaData = JsonConvert.SerializeObject(metadatalist).ToString(),
-                        Parent = parentsocial != null ? parentsocial.AssetId : Guid.Empty
-                    });
-                    _assetRepository.Complete();
-                }
+               
             }
             catch (Exception ex)
             {

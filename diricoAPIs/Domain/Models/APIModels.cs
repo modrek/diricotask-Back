@@ -14,21 +14,13 @@ namespace diricoAPIs.Domain.Models
         public int PageSize { get; set; }
         public string Expression { get; set; }
     }
-    public class FolderRequest
-    {        
-        public Guid? CurrentLevelKey { get; set; }
-    }    
-
+    
     public class FolderResponse
     {
         public Guid? FolderId { get; set; }
         public string FolderName { get; set; }
     }
 
-    public class FolderContentRequest
-    {     
-        public Guid FolderId { get; set; }
-    }
     public class FolderContentResponse
     {
         public Guid AssetID { get; set; }
@@ -37,15 +29,7 @@ namespace diricoAPIs.Domain.Models
         public string AssetPath { get; set; }
     }
 
-    public class UploadAssetRequest
-    {        
-        public AssetTypes AssetType { get; set; }
-    }
-
-    public class MetadataRequest
-    {       
-        public Guid AssetId { get; set; }
-    }
+    
     public class MetadataResponse
     {
         public string Metadata { get; set; }
