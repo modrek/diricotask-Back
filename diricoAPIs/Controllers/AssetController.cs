@@ -10,8 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using diricoAPIs.Domain.Models;
 using diricoAPIs.Domain.Repositories;
+using diricoAPIs.Logger;
 using diricoAPIs.Services;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
@@ -23,8 +23,11 @@ namespace diricoAPIs.Controllers
     [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiVersion("1")]
     [ApiController]
+    
     public class AssetController : Controller
     {
+        private readonly ILoggerManager _logger;
+
         private readonly IBlobService _azureBlobService;
         private readonly IImageAnalyzer _azureImageAnalyzer;
         private readonly IImageConverter _azureImageConverter;
@@ -32,6 +35,7 @@ namespace diricoAPIs.Controllers
         private readonly IAssetRepository _assetRepository;
 
         public AssetController(
+            ILoggerManager logger,
             IBlobService azureBlobService,
             IImageAnalyzer azureImageAnalyzer,
             IImageConverter azureImageConverter,
@@ -39,7 +43,7 @@ namespace diricoAPIs.Controllers
             IAssetRepository assetRepository
             )
         {
-
+            _logger = logger; 
             _azureBlobService = azureBlobService;
             _azureImageAnalyzer = azureImageAnalyzer;
             _azureImageConverter = azureImageConverter;
@@ -47,7 +51,7 @@ namespace diricoAPIs.Controllers
             _assetRepository = assetRepository;
         }
 
-        [EnableCors]
+        
         [HttpDelete]
         public async Task<ActionResult> DeleteAsset(Guid AssetID)
         {
@@ -63,11 +67,12 @@ namespace diricoAPIs.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("Unexpected Error ." + ex.Message);
+                return StatusCode(500, "Internal server error./n" + ex.Message);
+                
             }
         }
 
-        [EnableCors]
+        
         [HttpDelete]
         public async Task<ActionResult> DeleteAllAssets()
         {
@@ -81,19 +86,26 @@ namespace diricoAPIs.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("Unexpected Error ." + ex.Message);
+                return StatusCode(500, "Internal server error./n" + ex.Message);
+
+                
             }
         }
 
 
-        [EnableCors]
+        
         [HttpGet]
+        
         public List<FolderResponse> GetFolders(Guid? CurrentLevelKey)
         {
+            _logger.LogInfo("Here is info message from the controller.");
+            _logger.LogDebug("Here is debug message from the controller.");
+            _logger.LogWarn("Here is warn message from the controller.");
+            _logger.LogError("Here is error message from the controller.");
+
             return _assetRepository.GetFolders(CurrentLevelKey);
         }
 
-        [EnableCors]
         [HttpGet]
         public List<FolderContentResponse> GetFolderContents(Guid FolderId)
         {
@@ -102,7 +114,6 @@ namespace diricoAPIs.Controllers
         }
 
 
-        [EnableCors]
         [HttpGet]
         public MetadataResponse GetAssetMetadata(Guid AssetId)
         {
@@ -111,19 +122,20 @@ namespace diricoAPIs.Controllers
         }
 
 
-        [EnableCors]
         [HttpPost]
-        public async Task<string> UploadAsync(AssetTypes assetType)
+        public async Task<IActionResult> UploadAsync(AssetTypes assetType)
         {            
             try
             {
                 var request = await HttpContext.Request.ReadFormAsync();
                 if (request.Files == null)
-                    return "Could not uplaod file.";
+                    return StatusCode(500, "Could not uplaod file.");
+                
 
                 var files = request.Files;
                 if (files.Count != 1)
-                  return   "Could uplaod just only one file.";
+                    return StatusCode(500, "Could uplaod just only one file.");
+                
                 
 
                 // Analyze Image
@@ -157,12 +169,12 @@ namespace diricoAPIs.Controllers
                 // craete and upload SocialRequirement
                 await uploadSocialRequirementsAsync(assetType ,files[0], filepath , metadatalist);
 
-
-                return "Asset uploded successfully.";
+                return Ok( "Asset uploded successfully.");
+                
             }
             catch (Exception e)
             {
-                return "Could not uplaod file.\nError message:"+ e.Message;
+                return StatusCode(500, "Internal server error./n" + e.Message);                
             }
         }
 

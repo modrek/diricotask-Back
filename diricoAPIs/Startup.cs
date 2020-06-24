@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using diricoAPIs.Domain.Models;
 using diricoAPIs.Domain.Repositories;
+using diricoAPIs.Logger;
 using diricoAPIs.Services;
+using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLog;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace diricoAPIs
@@ -22,6 +26,8 @@ namespace diricoAPIs
     {
         public Startup(IConfiguration configuration)
         {
+            LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+            
             Configuration = configuration;
         }
 
@@ -36,6 +42,8 @@ namespace diricoAPIs
 
             services.AddSingleton<IBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<IImageAnalyzer, AzureImageAnalyzer>();
+            services.AddSingleton<ILoggerManager, LoggerManager>();
+
             services.AddScoped<IBlobService, AzureBlobService>();                       
             services.AddScoped<IVideoConverter, AzureVideoConverter>();
             services.AddScoped<IImageConverter, AzureImageConverter>();
@@ -48,6 +56,10 @@ namespace diricoAPIs
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
+
+
+            //services.ConfigureLoggerService();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c =>
