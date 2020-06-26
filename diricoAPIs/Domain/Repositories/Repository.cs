@@ -18,7 +18,7 @@ namespace diricoAPIs.Domain.Repositories
 
         public void Add(TEntity entity)
         {
-            _context.Set<TEntity>().Add(entity);
+           _context.Set<TEntity>().Add(entity);
         }
 
         public void AddRange(IEnumerable<TEntity> entities)

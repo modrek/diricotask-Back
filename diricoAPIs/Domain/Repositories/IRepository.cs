@@ -9,7 +9,7 @@ namespace diricoAPIs.Domain.Repositories
     public interface IRepository<TEntity> where TEntity : class
     {
         #region Add entiry
-        void Add(TEntity entity);
+        void  Add(TEntity entity);
 
         void AddRange(IEnumerable<TEntity> entities);
 

@@ -36,6 +36,10 @@ namespace diricoAPIs.Domain.Models
         [Display(Name = "Asset meta data")]
         public string MetaData { get; set; }
 
+
+        [Display(Name = "Original Asset Refrance")]
+        public Guid? OriginalAssetRef { get; set; }
+
         //[Display(Name = "Related User")]
         //public Guid UserRef { get; set; }
         //[ForeignKey("UserRef")]

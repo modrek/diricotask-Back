@@ -35,23 +35,42 @@ namespace diricoAPIs.Domain.Repositories
             }
         }
 
-        public List<FolderContentResponse> GetFolderContents(Guid FolderId)
+        public List<FolderContentResponse> GetFolderContents(bool showDetail, Guid FolderId)
         {
             try
-            {
-                var result = _context.Assets.Where(x => (x.AssetType == AssetTypes.Image || x.AssetType == AssetTypes.Video)
-                       && x.Parent == FolderId)
+            {                
+               
+                if (FolderId == null)
+                    FolderId = Guid.Empty;
+
+                if (showDetail)
+                    return _context.Assets.Where(x => x.OriginalAssetRef == FolderId)
                        .Select(x => new FolderContentResponse
                        {
                            AssetID = x.AssetId,
                            AssetName = x.AssetFileName,
                            AssetPath = x.AssetFilePath,
-                           AssetType = x.AssetType
+                           AssetType = x.AssetType,
+                           IsOrginalAsset = (x.OriginalAssetRef == Guid.Empty || x.OriginalAssetRef == null) ? true : false,
+
+                       })
+                       .ToList();
+                else
+                return _context.Assets.Where(x => x.Parent == FolderId)
+                       .Select(x => new FolderContentResponse
+                       {
+                           AssetID = x.AssetId,
+                           AssetName = x.AssetFileName,
+                           AssetPath = x.AssetFilePath,
+                           AssetType = x.AssetType,
+                           IsOrginalAsset = (x.OriginalAssetRef == Guid.Empty || x.OriginalAssetRef == null) ? true : false,
+                           
                        })
                        .ToList();
 
 
-                return result;
+
+               
             }
             catch (Exception ex)
             {
@@ -83,6 +102,34 @@ namespace diricoAPIs.Domain.Repositories
         public AssetModel GetEntityByPath(string path)
         {
            return _context.Assets.Where(x => x.AssetFilePath == path).FirstOrDefault();
+        }
+
+        public List<FolderContentResponse> GetRelatedAssets(Guid AssetId)
+        {
+            try
+            {
+                if (AssetId == null)
+                    AssetId = Guid.Empty;
+
+                var result = _context.Assets.Where(x => x.OriginalAssetRef == AssetId)
+                       .Select(x => new FolderContentResponse
+                       {
+                           AssetID = x.AssetId,
+                           AssetName = x.AssetFileName,
+                           AssetPath = x.AssetFilePath,
+                           AssetType = x.AssetType,
+                           IsOrginalAsset = (x.OriginalAssetRef == Guid.Empty || x.OriginalAssetRef ==null)? true : false
+                       })
+                       .ToList();
+
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                return null;// JsonObjectAttribute("Unexpected Error ." + ex.Message);
+            }
         }
     }
 }

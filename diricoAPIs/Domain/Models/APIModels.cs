@@ -27,6 +27,9 @@ namespace diricoAPIs.Domain.Models
         public string AssetName { get; set; }
         public AssetTypes AssetType { get; set; }
         public string AssetPath { get; set; }
+        public bool IsOrginalAsset { get; set; }
+
+        
     }
 
     

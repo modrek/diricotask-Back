@@ -1,0 +1,9 @@
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\bin\Debug\netcoreapp2.1\LoggerService.deps.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\bin\Debug\netcoreapp2.1\LoggerService.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\bin\Debug\netcoreapp2.1\LoggerService.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\obj\Debug\netcoreapp2.1\LoggerService.csprojAssemblyReference.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\obj\Debug\netcoreapp2.1\LoggerService.csproj.CoreCompileInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\obj\Debug\netcoreapp2.1\LoggerService.AssemblyInfoInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\obj\Debug\netcoreapp2.1\LoggerService.AssemblyInfo.cs
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\obj\Debug\netcoreapp2.1\LoggerService.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\LoggerService\obj\Debug\netcoreapp2.1\LoggerService.pdb

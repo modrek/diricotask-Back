@@ -1,0 +1,9 @@
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\bin\Release\netcoreapp2.1\ImageLibrary.deps.json
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\bin\Release\netcoreapp2.1\ImageLibrary.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\bin\Release\netcoreapp2.1\ImageLibrary.pdb
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\obj\Release\netcoreapp2.1\ImageLibrary.csprojAssemblyReference.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\obj\Release\netcoreapp2.1\ImageLibrary.csproj.CoreCompileInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\obj\Release\netcoreapp2.1\ImageLibrary.AssemblyInfoInputs.cache
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\obj\Release\netcoreapp2.1\ImageLibrary.AssemblyInfo.cs
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\obj\Release\netcoreapp2.1\ImageLibrary.dll
+C:\Users\Mohammad\Desktop\Tasks\diricoTask\ImageLibrary\obj\Release\netcoreapp2.1\ImageLibrary.pdb

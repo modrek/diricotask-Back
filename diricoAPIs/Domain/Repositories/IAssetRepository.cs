@@ -11,7 +11,9 @@ namespace diricoAPIs.Domain.Repositories
 
         List<FolderResponse> GetFolders(Guid? CurrentLevelKey);
 
-        List<FolderContentResponse> GetFolderContents(Guid FolderId);
+        List<FolderContentResponse> GetFolderContents(bool showDetail, Guid FolderId);
+
+        List<FolderContentResponse> GetRelatedAssets(Guid AssetId);
 
         MetadataResponse GetAssetMetadata(Guid AssetId);
 

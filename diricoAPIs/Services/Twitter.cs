@@ -29,11 +29,11 @@ namespace diricoAPIs.Services
             _imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Png, Width = 256, Height = 256, FoldersName = "Medium/Personal/Folder 1" });
             _imageRequiredScaled.Add(new ImageInfo { Extention = ImageFormat.Png, Width = 128, Height = 128, FoldersName = "Medium/Personal/Folder 2" });
 
-            _videoRequiredScaled.AddRange(new List<VideoInfo>() {
-                new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q320 },
-                new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.QFullHD },
-                new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q4K },
-            });
+            //_videoRequiredScaled.AddRange(new List<VideoInfo>() {
+            //    new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q320 },
+            //    new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.QFullHD },
+            //    new VideoInfo { Extention = VideoFormat.mp4, Quality = VideoQuality.Q4K },
+            //});
         }
 
         public async Task<List<ImageScaled>> CreateImagesAsync(string remoteUrl)
