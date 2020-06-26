@@ -82,26 +82,14 @@ namespace diricoAPIs.Controllers
         }
 
 
-        [HttpGet]
-
-        public List<FolderResponse> GetFolders(Guid? CurrentLevelKey)
-        {
-            var sss = _assetRepository.GetFolders(CurrentLevelKey);
-            return sss;
-        }
-
+        
         [HttpGet]
         public List<FolderContentResponse> GetFolderContents(bool showDetail, Guid FolderId)
         {
             return _assetRepository.GetFolderContents(showDetail, FolderId);
         }
 
-        [HttpGet]
-        public List<FolderContentResponse> GetRelatedAssets(Guid AssetId)
-        {
-            return _assetRepository.GetRelatedAssets(AssetId);
-        }
-
+      
 
         [HttpGet]
         public MetadataResponse GetAssetMetadata(Guid AssetId)
@@ -132,7 +120,7 @@ namespace diricoAPIs.Controllers
 
             // Analyze Image
             ImageAnalysis metadatalist = new ImageAnalysis();
-            if (assetType == AssetTypes.Folder)            
+            if (assetType == AssetTypes.Image)            
             using (var streamimage = files[0].OpenReadStream())
             {
                 metadatalist = await _azureImageAnalyzer.AnalyzImageAsync(streamimage);
@@ -147,7 +135,7 @@ namespace diricoAPIs.Controllers
 
             // add Original asset in database
             var parent = _assetRepository.GetEntityByPath("/Original");
-            Guid newAssetID = new Guid();
+            Guid newAssetID = Guid.NewGuid();
             _assetRepository.Add(new AssetModel
             {
                 AssetId = newAssetID,
@@ -229,7 +217,7 @@ namespace diricoAPIs.Controllers
                     var parentsocial = _assetRepository.GetEntityByPath("/" + fullfplderpath);
                     _assetRepository.Add(new AssetModel
                     {
-                        AssetId = new Guid(),
+                        AssetId = Guid.NewGuid(),
                         AssetFileName = socialfilename,
                         AssetFilePath = socialfilepath,
                         Datetime = DateTime.Now,
@@ -267,7 +255,7 @@ namespace diricoAPIs.Controllers
                 {
                     _assetRepository.Add(new AssetModel
                     {
-                        AssetId = new Guid(),
+                        AssetId = Guid.NewGuid(),
                         AssetFileName = cat,
                         AssetFilePath = path,
                         Datetime = DateTime.Now,
